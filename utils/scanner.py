@@ -11,13 +11,14 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 django.setup()
 
 from battlenet import Connection as bnetConnection, Character as bnetCharacter, Guild as bnetGuild, UNITED_STATES
-from core.models import Character, Guild
+from core.models import Character, Guild, Spec
 
 
 class Scanner(object):
     def __init__(self):
         self.connection = bnetConnection(public_key='nm3jrgp8avwjpqnptby38z763t9afyes',
-                                         private_key='Edt6pnruq8ntrE4YnwnBX4ckBnMddbf8', locale='en')
+                                         private_key='Edt6pnruq8ntrE4YnwnBX4ckBnMddbf8',
+                                         locale='en')
 
     def populate(self, battlegroup, realm, name):
         guild = self.connection.get_guild(battlegroup, realm, name, fields=[bnetGuild.MEMBERS])
@@ -43,8 +44,15 @@ class Scanner(object):
 
                 print(char.name, char_all.get_class_name())
 
-                char_model = Character.objects.get_or_create(name=char.name,
-                                                             )
+                char_model, created = Character.objects.get_or_create(name=char.name,
+                                                                      guild=guild_model)
+
+
+def create_equipment(equip):
+    if equip is None:
+        return None
+
+    print(equip.name, equip.bonus)
 
 
 def create_specs():
@@ -113,5 +121,3 @@ if __name__ == '__main__':
 
     sc = Scanner()
     sc.populate(guild_bg, guild_realm, guild_name)
-
-
