@@ -324,7 +324,7 @@ class Character(LazyThing):
 
         return ''
 
-        return ('%s %s' % (spec_name, class_name)).strip()
+
 
     def get_race_name(self):
         return RACE.get(self.race, 'Unknown')

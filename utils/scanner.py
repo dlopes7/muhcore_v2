@@ -10,8 +10,13 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 django.setup()
 
-from battlenet import Connection as bnetConnection, Character as bnetCharacter, Guild as bnetGuild, UNITED_STATES
-from core.models import Character, Guild, Spec, Realm
+from battlenet import Connection as bnetConnection
+from battlenet import Character as bnetCharacter
+from battlenet import Guild as bnetGuild
+from battlenet import Equipment as bnetEquipment
+from battlenet import UNITED_STATES
+
+from core.models import Character, Guild, Spec, Realm, Equipment
 
 
 class Scanner(object):
@@ -45,7 +50,7 @@ class Scanner(object):
         for member in guild.members:
             char = member['character']
 
-            if char.level == 100 and char.name == 'Gordonfreema':
+            if char.level == 100:
                 char_all = self.connection.get_character(battlegroup, realm, char.name,
                                                          fields=[bnetCharacter.ITEMS,
                                                                  bnetCharacter.TALENTS,
@@ -63,20 +68,59 @@ class Scanner(object):
 
                 char_model, created = Character.objects.get_or_create(name=char.name,
                                                                       character_id='{name}@{realm}'.format(
-                                                                          name=char.name,
-                                                                          realm=realm),
+                                                                              name=char.name,
+                                                                              realm=realm),
                                                                       )
+
+                create_equipment(char_all.equipment.chest)
+                equips = char_all.equipment  # type: bnetEquipment
+
+                char_model.ilvl_equipped = equips.average_item_level_equipped
+                char_model.avatar = char_all.get_thumbnail_url()
+                char_model.spec = spec
+                char_model.guild = guild_model
+
+                char_model.head = create_equipment(equips.head)
+                char_model.shoulder = create_equipment(equips.shoulder)
+                char_model.neck = create_equipment(equips.neck)
+                char_model.back = create_equipment(equips.back)
+                char_model.chest = create_equipment(equips.chest)
+                char_model.wrist = create_equipment(equips.wrist)
+                char_model.hands = create_equipment(equips.hands)
+                char_model.waist = create_equipment(equips.waist)
+                char_model.legs = create_equipment(equips.legs)
+                char_model.feet = create_equipment(equips.feet)
+                char_model.finger1 = create_equipment(equips.finger1)
+                char_model.finger2 = create_equipment(equips.finger2)
+                char_model.trinket1 = create_equipment(equips.trinket1)
+                char_model.trinket2 = create_equipment(equips.trinket2)
+                char_model.main_hand = create_equipment(equips.main_hand)
+                char_model.off_hand = create_equipment(equips.off_hand)
+
+                char_model.save()
 
 
 def create_equipment(equip):
     if equip is None:
         return None
 
-    print(equip.name,
-          equip.slot,
-          equip.bonus,
-          equip.ilvl,
-          )
+    print(equip.name)
+    print(equip.id)
+    print(equip.slot)
+    print(equip.ilvl)
+    print(equip.bonus)
+    print(equip.context)
+
+    equip_model, created = Equipment.objects.get_or_create(name=equip.name,
+                                                           ilvl=equip.ilvl,
+                                                           bonus=equip.bonus,
+                                                           equipment_id='{id}_{ilvl}_{bonus}'.format(ilvl=equip.ilvl,
+                                                                                                     id=equip.id,
+                                                                                                     bonus=equip.bonus),
+                                                           )
+
+
+    return equip_model
 
 
 def create_specs():

@@ -28,16 +28,18 @@ class Guild(models.Model):
 
 class Equipment(models.Model):
     name = models.CharField(max_length=200)
-    slot = models.CharField(max_length=200)
     ilvl = models.IntegerField(null=True)
     bonus = models.CharField(max_length=200)
-    origin = models.CharField(max_length=200)
     equipment_id = models.CharField(max_length=300, unique=True)
-    wowhead_id = models.CharField(max_length=300)
-    dropped_by = models.ForeignKey(Boss, related_name='equipment_dropped_by')
+    wowhead_id = models.CharField(max_length=300, null=True)
+    dropped_by = models.ForeignKey(Boss, related_name='equipment_dropped_by', null=True)
 
     def __str__(self):
-        return self.nome
+        return '{name}, ilvl: {ilvl}, slot: {slot}'.format(name=self.name,
+                                                           ilvl=self.ilvl,
+                                                           slot=self.slot
+
+                                                                 )
 
 
 class Spec(models.Model):
