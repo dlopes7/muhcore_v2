@@ -32,6 +32,7 @@ class Scanner(object):
                                                            region=battlegroup)
 
         guild_model, created = Guild.objects.get_or_create(guild_id='{name}@{realm}'.format(name=guild.name,
+
                                                                                             realm=realm_model.name,
                                                                                             ),
                                                            name=guild.name,
