@@ -16,6 +16,7 @@ from core.models import Character, Guild, Spec, Realm
 
 class Scanner(object):
     def __init__(self):
+        print('Connecting to Battlenet')
         self.connection = bnetConnection(public_key='nm3jrgp8avwjpqnptby38z763t9afyes',
                                          private_key='Edt6pnruq8ntrE4YnwnBX4ckBnMddbf8',
                                          locale='en')
@@ -59,20 +60,11 @@ class Scanner(object):
                 spec, created = Spec.objects.get_or_create(name=char_all.get_spec_name(),
                                                            spec_class=char_all.get_class_name())
 
-
-                create_equipment(char_all.equipment.back)
-                # char_model, created = Character.objects.get_or_create(name=char.name,
-                #                                                       character_id='{name}@{realm}'.format(name=char.name,
-                #                                                                                            realm=realm),
-                #                                                       defaults={'ilvl_equipped': char_all.equipment.average_item_level_equipped,
-                #                                                                 'avatar': char_all.get_thumbnail_url(),
-                #                                                                 'spec': spec,
-                #                                                                 'guild': guild_model,
-                #                                                                 ''}
-                #                                                       )
-
-                # char_model, created = Character.objects.get_or_create(name=char.name,
-                #                                                      guild=guild_model)
+                char_model, created = Character.objects.get_or_create(name=char.name,
+                                                                      character_id='{name}@{realm}'.format(
+                                                                          name=char.name,
+                                                                          realm=realm),
+                                                                      )
 
 
 def create_equipment(equip):

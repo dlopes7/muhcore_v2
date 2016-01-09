@@ -48,32 +48,31 @@ class Spec(models.Model):
 
 class Character(models.Model):
     name = models.CharField(max_length=200)
-    ilvl_equipped = models.IntegerField()
     character_id = models.CharField(max_length=200)
-    avatar = models.CharField(max_length=800)
 
-    spec = models.ForeignKey(Spec, related_name='character_spec')
-
-    guild = models.ForeignKey(Guild, related_name='character_guild')
-    head = models.ForeignKey(Equipment, related_name='character_head')
-    shoulder = models.ForeignKey(Equipment, related_name='character_shoulder')
-    neck = models.ForeignKey(Equipment, related_name='character_neck')
-    back = models.ForeignKey(Equipment, related_name='character_back')
-    chest = models.ForeignKey(Equipment, related_name='character_chest')
-    wrist = models.ForeignKey(Equipment, related_name='character_wrist')
-    hands = models.ForeignKey(Equipment, related_name='character_hands')
-    waist = models.ForeignKey(Equipment, related_name='character_waist')
-    legs = models.ForeignKey(Equipment, related_name='character_legs')
-    feet = models.ForeignKey(Equipment, related_name='character_feet')
-    finger1 = models.ForeignKey(Equipment, related_name='character_finger1')
-    finger2 = models.ForeignKey(Equipment, related_name='character_finger2')
-    trinket1 = models.ForeignKey(Equipment, related_name='character_trinket1')
-    trinket2 = models.ForeignKey(Equipment, related_name='character_trinket2')
-    main_hand = models.ForeignKey(Equipment, related_name='character_main_hand')
-    off_hand = models.ForeignKey(Equipment, related_name='character_off_hand')
+    ilvl_equipped = models.IntegerField(null=True)
+    avatar = models.CharField(max_length=800, null=True)
+    spec = models.ForeignKey(Spec, related_name='character_spec', null=True)
+    guild = models.ForeignKey(Guild, related_name='character_guild', null=True)
+    head = models.ForeignKey(Equipment, related_name='character_head', null=True)
+    shoulder = models.ForeignKey(Equipment, related_name='character_shoulder', null=True)
+    neck = models.ForeignKey(Equipment, related_name='character_neck', null=True)
+    back = models.ForeignKey(Equipment, related_name='character_back', null=True)
+    chest = models.ForeignKey(Equipment, related_name='character_chest', null=True)
+    wrist = models.ForeignKey(Equipment, related_name='character_wrist', null=True)
+    hands = models.ForeignKey(Equipment, related_name='character_hands', null=True)
+    waist = models.ForeignKey(Equipment, related_name='character_waist', null=True)
+    legs = models.ForeignKey(Equipment, related_name='character_legs', null=True)
+    feet = models.ForeignKey(Equipment, related_name='character_feet', null=True)
+    finger1 = models.ForeignKey(Equipment, related_name='character_finger1', null=True)
+    finger2 = models.ForeignKey(Equipment, related_name='character_finger2', null=True)
+    trinket1 = models.ForeignKey(Equipment, related_name='character_trinket1', null=True)
+    trinket2 = models.ForeignKey(Equipment, related_name='character_trinket2', null=True)
+    main_hand = models.ForeignKey(Equipment, related_name='character_main_hand', null=True)
+    off_hand = models.ForeignKey(Equipment, related_name='character_off_hand', null=True)
 
     def __str__(self):
-        return self.nome
+        return self.character_id
 
 
 class IlvlHistory(models.Model):
