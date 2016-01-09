@@ -11,7 +11,7 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 django.setup()
 
 from battlenet import Connection as bnetConnection, Character as bnetCharacter, Guild as bnetGuild, UNITED_STATES
-from core.models import Character, Guild, Spec
+from core.models import Character, Guild, Spec, Realm
 
 
 class Scanner(object):
@@ -21,38 +21,69 @@ class Scanner(object):
                                          locale='en')
 
     def populate(self, battlegroup, realm, name):
+
         guild = self.connection.get_guild(battlegroup, realm, name, fields=[bnetGuild.MEMBERS])
         print('Obtained guild {name} @ {realm} with {members} members'.format(name=guild.name,
                                                                               realm=guild.realm,
                                                                               members=len(guild.members)))
 
+        realm_model, created = Realm.objects.get_or_create(name=realm,
+                                                           region=battlegroup)
+
         guild_model, created = Guild.objects.get_or_create(guild_id='{name}@{realm}'.format(name=guild.name,
-                                                                                            realm=guild.realm))
+                                                                                            realm=realm_model.name,
+                                                                                            ),
+                                                           name=guild.name,
+                                                           realm=realm_model,
+                                                           defaults={'number_members': len(guild.members)})
 
         guild_model.number_members = len(guild.members)
-        guild_model.name = guild.name
-        guild_model.realm = guild.realm
-
         guild_model.save()
 
         for member in guild.members:
             char = member['character']
-            if char.level == 100:
-                char_all = self.connection.get_character(battlegroup, realm, name,
+
+            if char.level == 100 and char.name == 'Gordonfreema':
+                char_all = self.connection.get_character(battlegroup, realm, char.name,
                                                          fields=[bnetCharacter.ITEMS,
-                                                                 bnetCharacter.TALENTS])
+                                                                 bnetCharacter.TALENTS,
+                                                                 ],
+                                                         )  # type: bnetCharacter
 
-                print(char.name, char_all.get_class_name())
+                print(char.name,
+                      char_all.get_class_name(),
+                      char_all.get_spec_name(),
+                      char_all.equipment
+                      )
 
-                char_model, created = Character.objects.get_or_create(name=char.name,
-                                                                      guild=guild_model)
+                spec, created = Spec.objects.get_or_create(name=char_all.get_spec_name(),
+                                                           spec_class=char_all.get_class_name())
+
+
+                create_equipment(char_all.equipment.back)
+                # char_model, created = Character.objects.get_or_create(name=char.name,
+                #                                                       character_id='{name}@{realm}'.format(name=char.name,
+                #                                                                                            realm=realm),
+                #                                                       defaults={'ilvl_equipped': char_all.equipment.average_item_level_equipped,
+                #                                                                 'avatar': char_all.get_thumbnail_url(),
+                #                                                                 'spec': spec,
+                #                                                                 'guild': guild_model,
+                #                                                                 ''}
+                #                                                       )
+
+                # char_model, created = Character.objects.get_or_create(name=char.name,
+                #                                                      guild=guild_model)
 
 
 def create_equipment(equip):
     if equip is None:
         return None
 
-    print(equip.name, equip.bonus)
+    print(equip.name,
+          equip.slot,
+          equip.bonus,
+          equip.ilvl,
+          )
 
 
 def create_specs():

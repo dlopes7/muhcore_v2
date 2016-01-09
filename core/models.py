@@ -51,7 +51,6 @@ class Character(models.Model):
     ilvl_equipped = models.IntegerField()
     character_id = models.CharField(max_length=200)
     avatar = models.CharField(max_length=800)
-    color = models.CharField(max_length=200, default='1')
 
     spec = models.ForeignKey(Spec, related_name='character_spec')
 
