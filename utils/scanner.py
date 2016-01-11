@@ -17,13 +17,14 @@ from battlenet import Equipment as bnetEquipment
 from battlenet import UNITED_STATES
 
 from core.models import Character, Guild, Spec, Realm, Equipment, IlvlHistory
+from core.config import public_key, private_key
 
 
 class Scanner(object):
     def __init__(self):
         print('Connecting to Battlenet')
-        self.connection = bnetConnection(public_key='nm3jrgp8avwjpqnptby38z763t9afyes',
-                                         private_key='Edt6pnruq8ntrE4YnwnBX4ckBnMddbf8',
+        self.connection = bnetConnection(public_key=public_key,
+                                         private_key=private_key,
                                          locale='en')
 
     def create_realms(self, region):
