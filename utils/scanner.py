@@ -16,7 +16,7 @@ from battlenet import Guild as bnetGuild
 from battlenet import Equipment as bnetEquipment
 from battlenet import UNITED_STATES
 
-from core.models import Character, Guild, Spec, Realm, Equipment
+from core.models import Character, Guild, Spec, Realm, Equipment, IlvlHistory
 
 
 class Scanner(object):
@@ -25,6 +25,13 @@ class Scanner(object):
         self.connection = bnetConnection(public_key='nm3jrgp8avwjpqnptby38z763t9afyes',
                                          private_key='Edt6pnruq8ntrE4YnwnBX4ckBnMddbf8',
                                          locale='en')
+
+    def create_realms(self, region):
+        print('Creating Realms..')
+        realms = self.connection.get_all_realms(region)
+        for realm in realms:
+            realm_model, _ = Realm.objects.get_or_create(name=realm.name,
+                                                         region=region)
 
     def populate(self, battlegroup, realm, name):
 
@@ -51,16 +58,16 @@ class Scanner(object):
             char = member['character']
 
             if char.level == 100:
+                print('Looking for {name}...'.format(name=char.name), end='')
                 char_all = self.connection.get_character(battlegroup, realm, char.name,
                                                          fields=[bnetCharacter.ITEMS,
                                                                  bnetCharacter.TALENTS,
                                                                  ],
                                                          )  # type: bnetCharacter
 
-                print(char.name,
+                print(char_all.equipment.average_item_level_equipped,
                       char_all.get_class_name(),
                       char_all.get_spec_name(),
-                      char_all.equipment
                       )
 
                 spec, created = Spec.objects.get_or_create(name=char_all.get_spec_name(),
@@ -99,17 +106,15 @@ class Scanner(object):
 
                 char_model.save()
 
+                ilvl_history = IlvlHistory(personagem=char_model,
+                                           ilvl_equipped=char_model.ilvl_equipped)
+
+                ilvl_history.save()
+
 
 def create_equipment(equip):
     if equip is None:
         return None
-
-    print(equip.name)
-    print(equip.id)
-    print(equip.slot)
-    print(equip.ilvl)
-    print(equip.bonus)
-    print(equip.context)
 
     equip_model, created = Equipment.objects.get_or_create(name=equip.name,
                                                            ilvl=equip.ilvl,
@@ -118,8 +123,6 @@ def create_equipment(equip):
                                                                                                      id=equip.id,
                                                                                                      bonus=equip.bonus),
                                                            )
-
-
     return equip_model
 
 
@@ -188,4 +191,5 @@ if __name__ == '__main__':
     create_specs()
 
     sc = Scanner()
-    sc.populate(guild_bg, guild_realm, guild_name)
+    # sc.populate(guild_bg, guild_realm, guild_name)
+    # sc.create_realms(UNITED_STATES)
