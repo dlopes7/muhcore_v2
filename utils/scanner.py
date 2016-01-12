@@ -189,8 +189,8 @@ if __name__ == '__main__':
     guild_realm = 'Azralon'
     guild_bg = UNITED_STATES
 
-    create_specs()
+    # create_specs()
 
     sc = Scanner()
-    # sc.populate(guild_bg, guild_realm, guild_name)
-    # sc.create_realms(UNITED_STATES)
+    sc.populate(guild_bg, guild_realm, guild_name)
+    #sc.create_realms(UNITED_STATES)

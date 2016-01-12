@@ -20,6 +20,7 @@ from core import views
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
-    url(r'^guild/([a-z][a-z])/(.+)/(.+)$', views.guild_view, name='guild')
+    url(r'^guild/([a-z][a-z])/(.+)/(.+)$', views.guild_view, name='guild'),
+    url(r'^json_chars/$', views.json_chars, name='json_chars')
 
 ]
